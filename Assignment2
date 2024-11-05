@@ -1,7 +1,7 @@
 # person.py
 class Person:
     """Represents a person with basic details."""
-    
+
     def __init__(self, name: str, contact_info: str):
         self._name = name
         self._contact_info = contact_info
@@ -130,12 +130,18 @@ class ShoppingCart:
         self._items.append(item)
 
     def remove_item(self, item: OrderItem):
-        self._items.remove(item)
+        for cart_item in self._items:
+            if cart_item.get_ebook() == item.get_ebook() and cart_item.get_quantity() == item.get_quantity():
+                self._items.remove(cart_item)
+                break
+        else:
+            print("Item not found in the cart.")
 
     def update_item_quantity(self, item: OrderItem, quantity: int):
         for cart_item in self._items:
-            if cart_item == item:
-                cart_item.set_quantity(quantity)
+            if cart_item.get_ebook() == item.get_ebook():
+                cart_item._quantity = quantity  # Update quantity directly
+                break
 
     def calculate_total(self):
         return sum(item.get_ebook().get_price() * item.get_quantity() for item in self._items)
@@ -168,3 +174,47 @@ print(order)
 loyalty_discount = 0.1  # 10% loyalty discount
 invoice = Invoice(1001, order, discount=loyalty_discount)
 print(invoice)
+
+# Additional test cases for E-bookstore Management System
+
+# Test Case 1: Adding more items to the ShoppingCart
+print("\n--- Test Case 1: Adding more items to ShoppingCart ---")
+ebook3 = EBook("The Silent Patient", "Alex Michaelides", "2019", "Thriller", 60.0)
+cart.add_item(OrderItem(ebook3, 3))  # Adding a new ebook with quantity of 3
+print(cart)  # Expected: cart includes three types of books with the updated total price
+
+# Test Case 2: Removing an item from the ShoppingCart
+print("\n--- Test Case 2: Removing an item from ShoppingCart ---")
+cart.remove_item(OrderItem(ebook1, 2))  # Remove "Arabistan Orchards" with quantity 2
+print(cart)  # Expected: "Arabistan Orchards" should be removed from the cart, with updated total price
+
+# Test Case 3: Updating quantity of an existing item in ShoppingCart
+print("\n--- Test Case 3: Updating quantity of an existing item in ShoppingCart ---")
+cart.update_item_quantity(OrderItem(ebook2, 1), 5)  # Update "Harry Potter" quantity to 5
+print(cart)  # Expected: "Harry Potter" quantity updated to 5 with new total price
+
+# Test Case 4: Calculating total price in an Order without any items
+print("\n--- Test Case 4: Order without any items ---")
+empty_order = Order(102, [])  # Create an empty order
+print(empty_order)  # Expected: total price should be 0, and items list should be empty
+
+# Test Case 5: Applying a different VAT rate in Invoice
+print("\n--- Test Case 5: Invoice with different VAT rate ---")
+invoice_different_vat = Invoice(1002, order, discount=0.05, vat=0.12)  # 12% VAT with 5% discount
+print(invoice_different_vat)  # Expected: final price calculated with 12% VAT and 5% discount
+
+# Test Case 6: Generating Invoice without a discount
+print("\n--- Test Case 6: Invoice without a discount ---")
+invoice_no_discount = Invoice(1003, order, discount=0.0)  # No discount applied
+print(invoice_no_discount)  # Expected: final price calculated with 8% VAT and no discount
+
+# Test Case 7: Customer loyalty check
+print("\n--- Test Case 7: Customer loyalty status ---")
+print(f"Is customer loyal? {customer.is_loyal()}")  # Expected: True if customer loyalty is set to True
+
+# Test Case 8: Multiple customers with unique IDs
+print("\n--- Test Case 8: Multiple Customers with unique IDs ---")
+customer2 = Customer(2, "Ahmed", "Ahmed@gmail.com", is_loyal=False)
+print(customer2)  # Expected: Customer ID 2 with loyalty status False
+customer3 = Customer(3, "Sara", "Sara@hotmail.com")
+print(customer3)  # Expected: Customer ID 3 with default loyalty status False
