@@ -1,0 +1,112 @@
+class Person:
+    def __init__(self, name, contact_info):
+        self.name = name
+        self.contact_info = contact_info
+
+    def __str__(self):
+        return f"Name: {self.name}, Contact Info: {self.contact_info}"
+
+
+class Guest(Person):
+    def __init__(self, name, contact_info, guest_id, email):
+        super().__init__(name, contact_info)
+        self.guest_id = guest_id
+        self.email = email
+
+    def __str__(self):
+        return f"Guest ID: {self.guest_id}, Name: {self.name}, Email: {self.email}, Contact Info: {self.contact_info}"
+
+
+class Ticket:
+    def __init__(self, ticket_id, ticket_type, price, validity, discount, limitations):
+        self.ticket_id = ticket_id
+        self.ticket_type = ticket_type
+        self.price = price
+        self.validity = validity
+        self.discount = discount
+        self.limitations = limitations
+
+    def calculate_discounted_price(self):
+        return self.price - (self.price * self.discount / 100)
+
+    def __str__(self):
+        return f"Ticket ID: {self.ticket_id}, Type: {self.ticket_type}, Price: {self.price}, Validity: {self.validity}, Discount: {self.discount}%"
+
+
+class Order:
+    def __init__(self, order_id, order_date):
+        self.order_id = order_id
+        self.order_date = order_date
+        self.tickets = []
+
+    def add_ticket(self, ticket):
+        self.tickets.append(ticket)
+
+    def calculate_total_price(self):
+        return sum(ticket.calculate_discounted_price() for ticket in self.tickets)
+
+    def __str__(self):
+        ticket_details = "\n".join(str(ticket) for ticket in self.tickets)
+        return f"Order ID: {self.order_id}, Date: {self.order_date}\nTickets:\n{ticket_details}\nTotal Price: {self.calculate_total_price()}"
+
+
+class Payment:
+    def __init__(self, payment_id, amount, payment_method):
+        self.payment_id = payment_id
+        self.amount = amount
+        self.payment_method = payment_method
+
+    def __str__(self):
+        return f"Payment ID: {self.payment_id}, Amount: {self.amount}, Method: {self.payment_method}"
+
+
+def main():
+    # Create a guest
+    print("Create a Guest:")
+    guest_id = int(input("Enter Guest ID: "))
+    name = input("Enter Guest Name: ")
+    contact_info = input("Enter Contact Info: ")
+    email = input("Enter Email: ")
+    guest = Guest(name, contact_info, guest_id, email)
+    print(f"Guest created: {guest}\n")
+
+    # Create tickets
+    tickets = []
+    print("Add Tickets:")
+    while True:
+        ticket_id = int(input("Enter Ticket ID: "))
+        ticket_type = input("Enter Ticket Type: ")
+        price = float(input("Enter Ticket Price: "))
+        validity = input("Enter Ticket Validity: ")
+        discount = float(input("Enter Discount (%): "))
+        limitations = input("Enter Limitations: ")
+        ticket = Ticket(ticket_id, ticket_type, price, validity, discount, limitations)
+        tickets.append(ticket)
+        print(f"Ticket added: {ticket}\n")
+
+        add_more = input("Do you want to add another ticket? (yes/no): ").strip().lower()
+        if add_more != "yes":
+            break
+
+    # Create an order
+    print("\nCreate an Order:")
+    order_id = int(input("Enter Order ID: "))
+    order_date = input("Enter Order Date: ")
+    order = Order(order_id, order_date)
+
+    for ticket in tickets:
+        order.add_ticket(ticket)
+
+    print(f"\nOrder created:\n{order}\n")
+
+    # Process payment
+    print("Process Payment:")
+    payment_id = int(input("Enter Payment ID: "))
+    payment_method = input("Enter Payment Method: ")
+    amount = order.calculate_total_price()
+    payment = Payment(payment_id, amount, payment_method)
+    print(f"Payment processed: {payment}")
+
+
+if __name__ == "__main__":
+    main()
