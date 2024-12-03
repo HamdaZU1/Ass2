@@ -1,31 +1,35 @@
+# This class represents a person with a name and contact information
 class Person:
     def __init__(self, name, contact_info):
-        self.name = name
-        self.contact_info = contact_info
+        self.name = name  # The name of the person
+        self.contact_info = contact_info  # The contact information of the person
 
     def __str__(self):
         return f"Name: {self.name}, Contact Info: {self.contact_info}"
 
 
+# This class represents a guest, who is a type of person
 class Guest(Person):
     def __init__(self, name, contact_info, guest_id, email):
-        super().__init__(name, contact_info)
-        self.guest_id = guest_id
-        self.email = email
+        super().__init__(name, contact_info)  # Reusing the attributes of the Person class
+        self.guest_id = guest_id  # A unique ID for the guest
+        self.email = email  # The guest's email address
 
     def __str__(self):
         return f"Guest ID: {self.guest_id}, Name: {self.name}, Email: {self.email}, Contact Info: {self.contact_info}"
 
 
+# This class represents a ticket that a guest can purchase
 class Ticket:
     def __init__(self, ticket_id, ticket_type, price, validity, discount, limitations):
-        self.ticket_id = ticket_id
-        self.ticket_type = ticket_type
-        self.price = price
-        self.validity = validity
-        self.discount = discount
-        self.limitations = limitations
+        self.ticket_id = ticket_id  # A unique ID for the ticket
+        self.ticket_type = ticket_type  # The type of ticket (e.g., Single-Day Pass)
+        self.price = price  # The price of the ticket
+        self.validity = validity  # How long the ticket is valid
+        self.discount = discount  # Discount applied to the ticket (in percentage)
+        self.limitations = limitations  # Any special limitations for the ticket
 
+    # This method calculates the discounted price of the ticket
     def calculate_discounted_price(self):
         return self.price - (self.price * self.discount / 100)
 
@@ -33,15 +37,18 @@ class Ticket:
         return f"Ticket ID: {self.ticket_id}, Type: {self.ticket_type}, Price: {self.price}, Validity: {self.validity}, Discount: {self.discount}%"
 
 
+# This class represents an order that contains multiple tickets
 class Order:
     def __init__(self, order_id, order_date):
-        self.order_id = order_id
-        self.order_date = order_date
-        self.tickets = []
+        self.order_id = order_id  # A unique ID for the order
+        self.order_date = order_date  # The date when the order was created
+        self.tickets = []  # A list of tickets in the order
 
+    # This method adds a ticket to the order
     def add_ticket(self, ticket):
         self.tickets.append(ticket)
 
+    # This method calculates the total price of all tickets in the order
     def calculate_total_price(self):
         return sum(ticket.calculate_discounted_price() for ticket in self.tickets)
 
@@ -50,18 +57,19 @@ class Order:
         return f"Order ID: {self.order_id}, Date: {self.order_date}\nTickets:\n{ticket_details}\nTotal Price: {self.calculate_total_price()}"
 
 
+# This class represents a payment made for an order
 class Payment:
     def __init__(self, payment_id, amount, payment_method):
-        self.payment_id = payment_id
-        self.amount = amount
-        self.payment_method = payment_method
+        self.payment_id = payment_id  # A unique ID for the payment
+        self.amount = amount  # The total amount paid
+        self.payment_method = payment_method  # The method used for payment (e.g., Credit Card)
 
     def __str__(self):
         return f"Payment ID: {self.payment_id}, Amount: {self.amount}, Method: {self.payment_method}"
 
 
 def main():
-    # Create a guest
+    # Step 1: Create a guest
     print("Create a Guest:")
     guest_id = int(input("Enter Guest ID: "))
     name = input("Enter Guest Name: ")
@@ -70,7 +78,7 @@ def main():
     guest = Guest(name, contact_info, guest_id, email)
     print(f"Guest created: {guest}\n")
 
-    # Create tickets
+    # Step 2: Add tickets to the order
     tickets = []
     print("Add Tickets:")
     while True:
@@ -84,22 +92,24 @@ def main():
         tickets.append(ticket)
         print(f"Ticket added: {ticket}\n")
 
+        # Ask if the user wants to add more tickets
         add_more = input("Do you want to add another ticket? (yes/no): ").strip().lower()
         if add_more != "yes":
             break
 
-    # Create an order
+    # Step 3: Create an order and add tickets
     print("\nCreate an Order:")
     order_id = int(input("Enter Order ID: "))
     order_date = input("Enter Order Date: ")
     order = Order(order_id, order_date)
 
+    # Add tickets to the order
     for ticket in tickets:
         order.add_ticket(ticket)
 
     print(f"\nOrder created:\n{order}\n")
 
-    # Process payment
+    # Step 4: Process payment
     print("Process Payment:")
     payment_id = int(input("Enter Payment ID: "))
     payment_method = input("Enter Payment Method: ")
