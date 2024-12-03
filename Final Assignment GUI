@@ -1,1 +1,154 @@
+import tkinter as tk
+from tkinter import ttk, messagebox
 
+
+class TicketBookingApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Adventure Land Ticket Booking System")
+        self.customers = {}
+        self.tickets_sold = {"Single-Day Pass": 0, "VIP Pass": 0, "Group Ticket": 0}
+
+        # Main Screen
+        self.create_main_screen()
+
+    def create_main_screen(self):
+        self.clear_screen()
+
+        tk.Label(self.root, text="Adventure Land Ticket Booking", font=("Arial", 18, "bold")).pack(pady=10)
+        
+        tk.Button(self.root, text="Customer Account Management", command=self.account_management_screen, width=30).pack(pady=5)
+        tk.Button(self.root, text="Ticket Purchasing Interface", command=self.ticket_purchasing_screen, width=30).pack(pady=5)
+        tk.Button(self.root, text="Admin Dashboard", command=self.admin_dashboard, width=30).pack(pady=5)
+
+    def account_management_screen(self):
+        self.clear_screen()
+
+        tk.Label(self.root, text="Customer Account Management", font=("Arial", 16, "bold")).pack(pady=10)
+
+        # Form fields
+        tk.Label(self.root, text="Customer ID:").pack()
+        self.customer_id_entry = tk.Entry(self.root)
+        self.customer_id_entry.pack()
+
+        tk.Label(self.root, text="Name:").pack()
+        self.customer_name_entry = tk.Entry(self.root)
+        self.customer_name_entry.pack()
+
+        tk.Label(self.root, text="Contact:").pack()
+        self.customer_contact_entry = tk.Entry(self.root)
+        self.customer_contact_entry.pack()
+
+        # Action Buttons
+        tk.Button(self.root, text="Add Customer", command=self.add_customer).pack(pady=5)
+        tk.Button(self.root, text="Modify Customer", command=self.modify_customer).pack(pady=5)
+        tk.Button(self.root, text="Delete Customer", command=self.delete_customer).pack(pady=5)
+        tk.Button(self.root, text="Display All Customers", command=self.display_customers).pack(pady=5)
+
+        tk.Button(self.root, text="Back to Main Menu", command=self.create_main_screen).pack(pady=10)
+
+    def ticket_purchasing_screen(self):
+        self.clear_screen()
+
+        tk.Label(self.root, text="Ticket Purchasing Interface", font=("Arial", 16, "bold")).pack(pady=10)
+
+        # Ticket Options
+        tk.Label(self.root, text="Select Ticket Type:").pack()
+        self.ticket_type = tk.StringVar(value="Single-Day Pass")
+        ticket_options = ["Single-Day Pass", "VIP Pass", "Group Ticket"]
+        ttk.Combobox(self.root, textvariable=self.ticket_type, values=ticket_options, state="readonly").pack(pady=5)
+
+        tk.Label(self.root, text="Number of Tickets:").pack()
+        self.num_tickets_entry = tk.Entry(self.root)
+        self.num_tickets_entry.pack()
+
+        tk.Label(self.root, text="Payment Method:").pack()
+        self.payment_method = tk.StringVar(value="Credit Card")
+        payment_options = ["Credit Card", "Debit Card"]
+        ttk.Combobox(self.root, textvariable=self.payment_method, values=payment_options, state="readonly").pack(pady=5)
+
+        # Action Buttons
+        tk.Button(self.root, text="Purchase Ticket", command=self.purchase_ticket).pack(pady=5)
+        tk.Button(self.root, text="Back to Main Menu", command=self.create_main_screen).pack(pady=10)
+
+    def admin_dashboard(self):
+        self.clear_screen()
+
+        tk.Label(self.root, text="Admin Dashboard", font=("Arial", 16, "bold")).pack(pady=10)
+
+        # Display Ticket Sales
+        tk.Label(self.root, text="Ticket Sales Summary:").pack()
+        sales_summary = "\n".join([f"{ticket}: {count}" for ticket, count in self.tickets_sold.items()])
+        tk.Label(self.root, text=sales_summary).pack(pady=5)
+
+        # Modify Discounts
+        tk.Label(self.root, text="Modify Discounts Availability (Coming Soon)").pack()
+
+        tk.Button(self.root, text="Back to Main Menu", command=self.create_main_screen).pack(pady=10)
+
+    def add_customer(self):
+        customer_id = self.customer_id_entry.get()
+        name = self.customer_name_entry.get()
+        contact = self.customer_contact_entry.get()
+
+        if customer_id in self.customers:
+            messagebox.showerror("Error", "Customer ID already exists!")
+        else:
+            self.customers[customer_id] = {"name": name, "contact": contact}
+            messagebox.showinfo("Success", "Customer added successfully!")
+
+    def modify_customer(self):
+        customer_id = self.customer_id_entry.get()
+        name = self.customer_name_entry.get()
+        contact = self.customer_contact_entry.get()
+
+        if customer_id in self.customers:
+            self.customers[customer_id]["name"] = name
+            self.customers[customer_id]["contact"] = contact
+            messagebox.showinfo("Success", "Customer modified successfully!")
+        else:
+            messagebox.showerror("Error", "Customer ID not found!")
+
+    def delete_customer(self):
+        customer_id = self.customer_id_entry.get()
+        if customer_id in self.customers:
+            del self.customers[customer_id]
+            messagebox.showinfo("Success", "Customer deleted successfully!")
+        else:
+            messagebox.showerror("Error", "Customer ID not found!")
+
+    def display_customers(self):
+        if not self.customers:
+            messagebox.showinfo("Customers", "No customers found!")
+        else:
+            customer_list = "\n".join(
+                [f"ID: {id}, Name: {details['name']}, Contact: {details['contact']}" for id, details in self.customers.items()]
+            )
+            messagebox.showinfo("Customers", customer_list)
+
+    def purchase_ticket(self):
+        ticket_type = self.ticket_type.get()
+        try:
+            num_tickets = int(self.num_tickets_entry.get())
+        except ValueError:
+            messagebox.showerror("Error", "Number of tickets must be an integer!")
+            return
+
+        payment_method = self.payment_method.get()
+
+        if num_tickets <= 0:
+            messagebox.showerror("Error", "Number of tickets must be greater than 0!")
+            return
+
+        self.tickets_sold[ticket_type] += num_tickets
+        messagebox.showinfo("Success", f"Purchased {num_tickets} {ticket_type}(s) via {payment_method}!")
+
+    def clear_screen(self):
+        for widget in self.root.winfo_children():
+            widget.destroy()
+
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = TicketBookingApp(root)
+    root.mainloop()
